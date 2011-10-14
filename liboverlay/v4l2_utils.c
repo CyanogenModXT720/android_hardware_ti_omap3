@@ -47,6 +47,7 @@
 #define V4L2_CID_PRIV_COLORKEY_EN	(V4L2_CID_PRIVATE_BASE \
 						+ V4L2_CID_PRIV_OFFSET + 2)
 
+#define V4L2_CID_PRIVATE_DECIMATE_BY_2  (V4L2_CID_PRIVATE_BASE + 0x921)
 
 
 int v4l2_overlay_get(int name) {
@@ -193,15 +194,27 @@ int configure_pixfmt(struct v4l2_pix_format *pix, int32_t fmt,
     int fd;
 
     switch (fmt) {
+        case OVERLAY_FORMAT_RGBA_8888:
+            return -1;
         case OVERLAY_FORMAT_RGB_565:
             pix->pixelformat = V4L2_PIX_FMT_RGB565;
             break;
+        case OVERLAY_FORMAT_BGRA_8888:
+            return -1;
+        case OVERLAY_FORMAT_YCbCr_422_SP:
+            break;
+        case OVERLAY_FORMAT_YCbCr_420_SP:
+            return -1;
         case OVERLAY_FORMAT_YCbYCr_422_I:
             pix->pixelformat = V4L2_PIX_FMT_YUYV;
             break;
         case OVERLAY_FORMAT_CbYCrY_422_I:
             pix->pixelformat = V4L2_PIX_FMT_UYVY;
             break;
+        case OVERLAY_FORMAT_YCbYCr_420_I:
+            return -1;
+        case OVERLAY_FORMAT_CbYCrY_420_I:
+            return -1;
         default:
             return -1;
     }
@@ -482,6 +495,17 @@ int v4l2_overlay_set_local_alpha(int fd, int enable)
     return ret;
 }
 
+int v4l2_overlay_set_decimate_by_2(int fd, int enable)
+{
+    int ret;
+    struct v4l2_control ctrl;
+
+    ctrl.id = V4L2_CID_PRIVATE_DECIMATE_BY_2;
+    ctrl.value = enable;
+    ret = v4l2_overlay_ioctl(fd, VIDIOC_S_CTRL, &ctrl, "set decimate by 2");
+
+    return ret;
+}
 int v4l2_overlay_req_buf(int fd, uint32_t *num_bufs, int cacheable_buffers)
 {
     LOG_FUNCTION_NAME

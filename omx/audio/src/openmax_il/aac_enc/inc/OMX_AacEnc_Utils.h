@@ -55,6 +55,8 @@
     #define PV_OMX_COMPONENT_CAPABILITY_TYPE_INDEX 0xFF7A347
 #endif
 
+#define EXTRA_BYTES 128 
+#define DSP_CACHE_ALIGNMENT 256 
 #ifdef __PERF_INSTRUMENTATION__
     #include "perf.h"
 #endif

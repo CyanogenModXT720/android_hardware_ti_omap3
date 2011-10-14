@@ -3191,6 +3191,10 @@ OMX_ERRORTYPE OMX_VIDENC_InitDSP_H264Enc(VIDENC_COMPONENT_PRIVATE* pComponentPri
     pMemoryListHead = pComponentPrivate->pMemoryListHead;
     /* pH264IntraPeriod = pComponentPrivate->pH264IntraPeriod; */
     pMotionVector = pComponentPrivate->pMotionVector;
+    /*Q16 conversion*/
+    float xFrameRate=(float)pPortDefIn->format.video.xFramerate;
+    xFrameRate/=(1<<16);
+    xFrameRate*=1000;//this is needed by SN
     pComponentPrivate->bErrorLcmlHandle = OMX_FALSE;
 
     pLcmlHandle = (LCML_DSP_INTERFACE*)pComponentPrivate->pLCML;
@@ -3483,6 +3487,23 @@ OMX_ERRORTYPE OMX_VIDENC_InitDSP_Mpeg4Enc(VIDENC_COMPONENT_PRIVATE* pComponentPr
     pLcmlDSP->Out_BufInfo.DataTrMethod      = DMM_METHOD;
 
     pLcmlDSP->NodeInfo.nNumOfDLLs           = OMX_MP4ENC_NUM_DLLS;
+    OMX_U32 nFrameWidth = pPortDefIn->format.video.nFrameWidth;
+    OMX_U32 nFrameHeight = pPortDefIn->format.video.nFrameHeight;
+
+    if((nFrameWidth * nFrameHeight > 880 * 720) &&
+       (nFrameWidth <= 1280) && (nFrameHeight <= 720))
+    {
+        pLcmlDSP->NodeInfo.AllUUIDs[0].uuid     = &MP4VESOCKET_TI_UUID;
+        strcpy ((char *)pLcmlDSP->NodeInfo.AllUUIDs[0].DllName,MP4720P_ENC_NODE_DLL);
+        pLcmlDSP->NodeInfo.AllUUIDs[0].eDllType = DLL_NODEOBJECT;
+
+        pLcmlDSP->NodeInfo.AllUUIDs[1].uuid     = &MP4VESOCKET_TI_UUID;
+        strcpy ((char *)pLcmlDSP->NodeInfo.AllUUIDs[1].DllName,MP4720P_ENC_NODE_DLL);
+        pLcmlDSP->NodeInfo.AllUUIDs[1].eDllType = DLL_DEPENDENT;
+        pComponentPrivate->nIntraFrameInterval = 8;
+    }
+    else
+    {
     pLcmlDSP->NodeInfo.AllUUIDs[0].uuid     = &MP4VESOCKET_TI_UUID;
     strcpy ((char *)pLcmlDSP->NodeInfo.AllUUIDs[0].DllName,MP4_ENC_NODE_DLL);
     pLcmlDSP->NodeInfo.AllUUIDs[0].eDllType = DLL_NODEOBJECT;
@@ -3490,6 +3511,7 @@ OMX_ERRORTYPE OMX_VIDENC_InitDSP_Mpeg4Enc(VIDENC_COMPONENT_PRIVATE* pComponentPr
     pLcmlDSP->NodeInfo.AllUUIDs[1].uuid     = &MP4VESOCKET_TI_UUID;
     strcpy ((char *)pLcmlDSP->NodeInfo.AllUUIDs[1].DllName,MP4_ENC_NODE_DLL);
     pLcmlDSP->NodeInfo.AllUUIDs[1].eDllType = DLL_DEPENDENT;
+    }
 
     pLcmlDSP->NodeInfo.AllUUIDs[2].uuid     = &USN_UUID;
     strcpy ((char *)pLcmlDSP->NodeInfo.AllUUIDs[2].DllName,USN_DLL);
@@ -4206,15 +4228,19 @@ OMX_U32 GetMaxAVCBufferSize(OMX_U32 width, OMX_U32 height)
         MaxCPB = 2000;
     }
     else if(nMacroBlocks <= 792) {
-        MaxCPB = 4000;
+        MaxCPB = 10000;
     }
     else if(nMacroBlocks <= 1620) {
         /* Note - Max bitrate in this case is assumed to max 4 Mbps to limit the buffer size 
            If bitrate in this particular case could be higher than 4 Mbps, increase MxCPB value */
-        MaxCPB = 4000;
-    }
-    else
         MaxCPB = 14000;
+    }
+	else if(nMacroBlocks <= 3600) { 
+		/* 3600 equals to 1280x720/256 */
+		MaxCPB = 62500;
+	}
+    else
+        MaxCPB = 240000;
 
     /* MaxCPB are in units of 1200 bits i.e. 150 bytes */
     /* Return  buffer size in bytes*/

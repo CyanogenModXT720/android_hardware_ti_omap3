@@ -2479,6 +2479,9 @@ static OMX_ERRORTYPE SetConfig (OMX_HANDLETYPE hComponent,
         case VideoEncodeCustomConfigIndexAIRRate:
             pComponentPrivate->nAIRRate = (OMX_U32)(*((OMX_U32*)ComponentConfigStructure));
             break;
+        case VideoEncodeCustomConfigIndexTargetBitRate:
+            pComponentPrivate->nTargetBitRate = (OMX_U32)(*((OMX_U32*)ComponentConfigStructure));
+            break;
         /*ASO/FMO*/
         case VideoEncodeCustomConfigIndexNumSliceASO:
             pComponentPrivate->numSliceASO = (OMX_U32)(*((OMX_U32*)ComponentConfigStructure));

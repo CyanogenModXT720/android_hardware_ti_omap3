@@ -87,6 +87,7 @@
     #define GPP_PRIVATE_NODE_HEAP
 #endif
 
+#define VIDENC_NUM_CUSTOM_INDEXES 23
 #if 1
     #define __KHRONOS_CONF__
 #endif
@@ -628,6 +629,7 @@ typedef struct VIDENC_COMPONENT_PRIVATE
     OMX_BOOL bDSPStopAck;
     OMX_BOOL bForceIFrame;
     OMX_BOOL bFlushComplete;
+    OMX_BOOL bEmptyPipes;
     OMX_BOOL bHideEvents;
     OMX_BOOL bHandlingFatalError;
     OMX_BOOL bUnresponsiveDsp;

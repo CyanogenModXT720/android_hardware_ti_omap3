@@ -7056,6 +7056,28 @@ OMX_ERRORTYPE VIDDEC_InitDSP_H264Dec(VIDDEC_COMPONENT_PRIVATE* pComponentPrivate
     lcml_dsp->Out_BufInfo.DataTrMethod = DMM_METHOD;
 
     lcml_dsp->NodeInfo.nNumOfDLLs = OMX_H264DEC_NUM_DLLS;
+    OMX_U32 nFrameWidth = pComponentPrivate->pOutPortDef->format.video.nFrameWidth;
+    OMX_U32 nFrameHeight = pComponentPrivate->pOutPortDef->format.video.nFrameHeight;
+    
+    // vktx63 : Contents blocking 720p over-frame.
+    if((nFrameWidth > 1280) || (nFrameHeight > 720))
+    {
+        eError = OMX_ErrorUnsupportedSetting;
+        goto EXIT;
+    }
+    // vktx63 : Contents blocking 720p over-frame.
+    else if(nFrameWidth * nFrameHeight > 880 * 480) /* vktx63 : LIBtt62027 : original : 880 * 720 */
+    {
+        lcml_dsp->NodeInfo.AllUUIDs[0].uuid = (struct DSP_UUID *)&H264VDSOCKET_TI_UUID;
+        strcpy ((char*)lcml_dsp->NodeInfo.AllUUIDs[0].DllName,(char*)H264720P_DEC_NODE_DLL);
+        lcml_dsp->NodeInfo.AllUUIDs[0].eDllType = DLL_NODEOBJECT;
+
+        lcml_dsp->NodeInfo.AllUUIDs[1].uuid = (struct DSP_UUID *)&H264VDSOCKET_TI_UUID;
+        strcpy ((char*)lcml_dsp->NodeInfo.AllUUIDs[1].DllName,(char*)H264720P_DEC_NODE_DLL);
+        lcml_dsp->NodeInfo.AllUUIDs[1].eDllType = DLL_DEPENDENT;
+    }
+    else
+    {
     lcml_dsp->NodeInfo.AllUUIDs[0].uuid = (struct DSP_UUID *)&H264VDSOCKET_TI_UUID;
     strcpy ((char*)lcml_dsp->NodeInfo.AllUUIDs[0].DllName,(char*)H264_DEC_NODE_DLL);
     lcml_dsp->NodeInfo.AllUUIDs[0].eDllType = DLL_NODEOBJECT;
@@ -7063,6 +7085,7 @@ OMX_ERRORTYPE VIDDEC_InitDSP_H264Dec(VIDDEC_COMPONENT_PRIVATE* pComponentPrivate
     lcml_dsp->NodeInfo.AllUUIDs[1].uuid = (struct DSP_UUID *)&H264VDSOCKET_TI_UUID;
     strcpy ((char*)lcml_dsp->NodeInfo.AllUUIDs[1].DllName,(char*)H264_DEC_NODE_DLL);
     lcml_dsp->NodeInfo.AllUUIDs[1].eDllType = DLL_DEPENDENT;
+    }
 
     lcml_dsp->NodeInfo.AllUUIDs[2].uuid = (struct DSP_UUID *)&USN_UUID;
     strcpy ((char*)lcml_dsp->NodeInfo.AllUUIDs[2].DllName,(char*)USN_DLL);

@@ -326,6 +326,8 @@
 /* ======================================================================= */
 #undef AACDEC_MEMDETAILS
 
+#define EXTRA_BYTES 128 /* For Cache alignment*/
+#define DSP_CACHE_ALIGNMENT 256 /* For Cache alignment*/
 #define AACDEC_OUTPUT_PORT 1
 #define AACDEC_INPUT_PORT 0
 #define AACDEC_APP_ID  100
