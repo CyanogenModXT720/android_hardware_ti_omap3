@@ -7056,8 +7056,8 @@ OMX_ERRORTYPE VIDDEC_InitDSP_H264Dec(VIDDEC_COMPONENT_PRIVATE* pComponentPrivate
     lcml_dsp->Out_BufInfo.DataTrMethod = DMM_METHOD;
 
     lcml_dsp->NodeInfo.nNumOfDLLs = OMX_H264DEC_NUM_DLLS;
-    OMX_U32 nFrameWidth = pComponentPrivate->pOutPortDef->format.video.nFrameWidth;
-    OMX_U32 nFrameHeight = pComponentPrivate->pOutPortDef->format.video.nFrameHeight;
+    //OMX_U32 nFrameWidth = pComponentPrivate->pOutPortDef->format.video.nFrameWidth;
+    //OMX_U32 nFrameHeight = pComponentPrivate->pOutPortDef->format.video.nFrameHeight;
     
     // vktx63 : Contents blocking 720p over-frame.
     if((nFrameWidth > 1280) || (nFrameHeight > 720))
