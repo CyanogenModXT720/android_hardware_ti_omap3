@@ -1,0 +1,5 @@
+initial "backport" of moto specific 720 capabilities
+based on the latest published from motorola hardwara omap3
+
+my tests (just compile) are ok
+
