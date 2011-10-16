@@ -3,3 +3,6 @@ based on the latest published from motorola hardwara omap3
 
 my tests (just compile) are ok
 
+so far, so good, but this repository was not the correct one..
+the correct one is omap3-compatible
+but anyway, will not delete this one (but please don't use it for building:)
