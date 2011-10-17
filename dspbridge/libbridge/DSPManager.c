@@ -395,3 +395,14 @@ DBAPI DSPManager_GetProcResourceInfo(UINT *pBuf, UINT *pSize)
 }
 #endif
 
+#ifdef MOTO_FORCE_RECOVERY
+DBAPI DSPManager_Force_Recovery()
+{
+	DSP_STATUS status = DSP_SOK;
+	Trapped_Args tempStruct;
+
+	status = DSPTRAP_Trap(&tempStruct,CMD_MGR_FORCE_RECOVERY_OFFSET);
+
+	return status;
+}
+#endif

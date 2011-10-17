@@ -207,6 +207,11 @@ extern "C" {
 	extern DBAPI DSPManager_GetProcResourceInfo(UINT *pBuf, UINT *pSize);
 #endif
 
+#ifdef MOTO_FORCE_RECOVERY
+
+	extern DBAPI DSPManager_Force_Recovery() ;
+
+#endif
 
 #ifdef __cplusplus
 }
