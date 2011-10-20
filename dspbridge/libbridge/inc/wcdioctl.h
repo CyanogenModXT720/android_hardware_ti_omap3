@@ -460,6 +460,8 @@ typedef union {
 #undef  CMD_MGR_END_OFFSET
 #define CMD_MGR_END_OFFSET              CMD_MGR_FORCE_RECOVERY_OFFSET
 #endif
+
+
 #define CMD_PROC_BASE_OFFSET            (CMD_MGR_END_OFFSET + 1)
 #define CMD_PROC_ATTACH_OFFSET          (CMD_PROC_BASE_OFFSET + 0)
 #define CMD_PROC_CTRL_OFFSET            (CMD_PROC_BASE_OFFSET + 1)

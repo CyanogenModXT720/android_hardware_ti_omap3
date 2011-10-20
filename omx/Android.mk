@@ -5,7 +5,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-TI_BRIDGE_INCLUDES := hardware/ti/omap3/dspbridge/inc
+TI_BRIDGE_INCLUDES := hardware/ti/omap3-compat/dspbridge/inc
 
 OMX_DEBUG := 0
 RESOURCE_MANAGER_ENABLED := 0
@@ -57,6 +57,11 @@ endif
 
 ifeq ($(DVFS_ENABLED),1)
 TI_OMX_CFLAGS += -DDVFS_ENABLED
+endif
+
+# Required for Motorola Defy Codecs
+ifeq ($(TARGET_BOOTLOADER_BOARD_NAME),jordan)
+TI_OMX_CFLAGS += -DMOTO_FORCE_RECOVERY
 endif
 
 
