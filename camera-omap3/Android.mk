@@ -45,8 +45,9 @@ LOCAL_C_INCLUDES += \
 
 LOCAL_CFLAGS += -O0 -g3 -fpic -fstrict-aliasing -DIPP_LINUX -D___ANDROID___ -DHARDWARE_OMX
 
-# Required for Motorola Defy libbridge
-ifeq ($(TARGET_BOOTLOADER_BOARD_NAME),jordan)
+# Required for Motorola Defy, Cliq2 & DroidX
+# kernel/arch/arm/plat-omap/include/dspbridge/wcdioctl.h
+ifeq ($(TARGET_USE_OMX_RECOVERY),true)
 LOCAL_CFLAGS += -DMOTO_FORCE_RECOVERY
 endif
 
