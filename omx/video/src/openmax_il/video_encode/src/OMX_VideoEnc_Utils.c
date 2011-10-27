@@ -140,19 +140,19 @@ OMX_U32 VIDENC_STRUCT_H264DEFBITRATE [VIDENC_MAXBITRATES][2] = {
 /*2*/    {320 * 240, 400000},     /*400KBps*/
 /*3*/    {352 * 288, 500000},     /*500kBps*/
 /*4*/    {640 * 480, 1500000},    /*1.5MBps*/
-/*5*/    {720 * 480, 2000000},    /*2MBps*/
+/*5*/    {720 * 480, 3000000},    /*2MBps*/
 /*6*/    {720 * 576, 3000000},    /*3MBps*/
-/*7*/    {1280 * 720, 3000000},   /*3MBps*/
+/*7*/    {1280 * 720, 8000000},   /*3MBps*/
 };
 
 OMX_U32 VIDENC_STRUCT_MPEG4DEFBITRATE [VIDENC_MAXBITRATES][2] = {
-/*1*/    {176 * 144, 128000},     /*128KBps*/
+/*1*/    {176 * 144, 300000},     /*128KBps*/
 /*2*/    {320 * 240, 400000},     /*400KBps*/
 /*3*/    {352 * 288, 500000},     /*500kBps*/
-/*4*/    {640 * 480, 1500000},    /*1.5MBps*/
-/*5*/    {720 * 480, 2000000},    /*2MBps*/
-/*6*/    {720 * 576, 3000000},    /*3MBps*/
-/*7*/    {1280 * 720, 3000000},   /*3MBps*/
+/*4*/    {640 * 480, 300000},    /*1.5MBps*/
+/*5*/    {720 * 480, 3500000},    /*2MBps*/
+/*6*/    {720 * 576, 3500000},    /*3MBps*/
+/*7*/    {1280 * 720, 8000000},   /*3MBps*/
 };
 
 OMX_U32 VIDENC_STRUCT_H263DEFBITRATE [VIDENC_MAXBITRATES][2] = {
@@ -160,9 +160,9 @@ OMX_U32 VIDENC_STRUCT_H263DEFBITRATE [VIDENC_MAXBITRATES][2] = {
 /*2*/    {320 * 240, 400000},     /*400KBps*/
 /*3*/    {352 * 288, 500000},     /*500kBps*/
 /*4*/    {640 * 480, 1500000},    /*1.5MBps*/
-/*5*/    {720 * 480, 2000000},    /*2MBps*/
+/*5*/    {720 * 480, 3000000},    /*2MBps*/
 /*6*/    {720 * 576, 3000000},    /*3MBps*/
-/*7*/    {1280 * 720, 3000000},   /*3MBps*/
+/*7*/    {1280 * 720, 8000000},   /*3MBps*/
 };
 /*--------macro definitions ---------------------------------------------------*/
 
@@ -368,6 +368,39 @@ void OMX_VIDENC_SignalIfAllBuffersAreReturned(VIDENC_COMPONENT_PRIVATE *pCompone
         LOGI("Sending pthread signal that video encoder has returned all buffers to app");
     }
     pthread_mutex_unlock(&bufferReturned_mutex);
+}
+        else
+        {
+            if ((FD_ISSET(pComponentPrivate->nFilled_iPipe[0], &rfds)))
+            { 
+                nRet = read(pComponentPrivate->nFilled_iPipe[0],
+                            &pBufHead, 
+                            sizeof(pBufHead));
+                OMX_PRBUFFER2(pComponentPrivate->dbg, "Flusing pipe nFilled_iPipe[0]!\n");
+                if (nRet == -1)
+                {
+                    OMX_PRBUFFER3(pComponentPrivate->dbg, "Error while reading from nFilled_iPipe\n");
+                    OMX_CONF_SET_ERROR_BAIL(eError, OMX_ErrorHardware);
+                }
+            }
+            if (FD_ISSET(pComponentPrivate->nFree_oPipe[0], &rfds))
+            {
+                OMX_PRBUFFER2(pComponentPrivate->dbg, "Flusing pipe nFree_oPipe[0]!\n");
+                nRet = read(pComponentPrivate->nFree_oPipe[0],
+                            &pBufHead,
+                            sizeof(pBufHead));
+                if (nRet == -1)
+                {
+                    OMX_PRBUFFER3(pComponentPrivate->dbg, "Error while reading from nFree_oPipe\n");
+                    OMX_CONF_SET_ERROR_BAIL(eError, OMX_ErrorHardware);
+                }
+            }
+        }
+    }
+    pComponentPrivate->bEmptyPipes = OMX_TRUE;
+    
+OMX_CONF_CMD_BAIL:
+    return eError; 
 }
 
 /*---------------------------------------------------------------------------------------*/
@@ -2111,6 +2144,8 @@ OMX_ERRORTYPE OMX_VIDENC_HandleCommandStateSetLoaded (VIDENC_COMPONENT_PRIVATE* 
             PERF_Boundary(pComponentPrivate->pPERFcomp,
                           PERF_BoundaryStart | PERF_BoundaryCleanup);
     #endif
+        if ( pPortDefIn->bEnabled == OMX_TRUE || pPortDefOut->bEnabled == OMX_TRUE )
+        {
             pthread_mutex_lock(&pComponentPrivate->videoe_mutex_app);
             while ( (pPortDefIn->bPopulated) || (pPortDefOut->bPopulated))
             {
@@ -2121,6 +2156,7 @@ OMX_ERRORTYPE OMX_VIDENC_HandleCommandStateSetLoaded (VIDENC_COMPONENT_PRIVATE* 
     #endif
             }
             pthread_mutex_unlock(&pComponentPrivate->videoe_mutex_app);
+			}
 
     #ifdef RESOURCE_MANAGER_ENABLED /* Resource Manager Proxy Calls */
             if (pPortDefOut->format.video.eCompressionFormat == OMX_VIDEO_CodingAVC)
@@ -2498,7 +2534,7 @@ OMX_ERRORTYPE OMX_VIDENC_Process_FilledInBuf(VIDENC_COMPONENT_PRIVATE* pComponen
         /*< Maximum QP to be used  Range[0,51]*/
         ((H264VE_GPP_SN_UALGInputParams*)pUalgInpParams)->H264VENC_TI_DYNAMICPARAMS.qpMax = 0x00000033;
         /*< Minimum QP to be used  Range[0,51]*/
-        ((H264VE_GPP_SN_UALGInputParams*)pUalgInpParams)->H264VENC_TI_DYNAMICPARAMS.qpMin = 0x0000000a;
+        ((H264VE_GPP_SN_UALGInputParams*)pUalgInpParams)->H264VENC_TI_DYNAMICPARAMS.qpMin = 0x00000000;
         /*< Controls enable/disable loop filter, See IH264VENC_LoopFilterParams for more details*/
         ((H264VE_GPP_SN_UALGInputParams*)pUalgInpParams)->H264VENC_TI_DYNAMICPARAMS.lfDisableIdc = 0x00000000;
         /*< enable/disable Quarter Pel Interpolation*/

@@ -117,8 +117,8 @@
 /*Select Timeout */
 #define  VIDENC_TIMEOUT_SEC 120;
 #define  VIDENC_TIMEOUT_USEC 0;
-#define WVGA_MAX_WIDTH 854
-#define WVGA_MAX_HEIGHT WVGA_MAX_WIDTH
+#define WVGA_MAX_WIDTH 1280   //w21700 Ryan Added.
+#define WVGA_MAX_HEIGHT 720 //WVGA_MAX_WIDTH... w21700 Ryan Changed, to support HD camcorder resolution 
 
 /*
 * Definition of capabilities index and structure

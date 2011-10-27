@@ -927,12 +927,12 @@ sDynamicFormat = getenv("FORMAT");
     OMX_CONF_INIT_STRUCT(pCompPortIn->pBitRateType, OMX_VIDEO_PARAM_BITRATETYPE);
     pCompPortIn->pBitRateType->nPortIndex = VIDENC_INPUT_PORT;
     pCompPortIn->pBitRateType->eControlRate = OMX_Video_ControlRateDisable;
-    pCompPortIn->pBitRateType->nTargetBitrate = 0;
+	pCompPortIn->pBitRateType->nTargetBitrate = 64000;
 
     OMX_CONF_INIT_STRUCT(pCompPortOut->pBitRateType, OMX_VIDEO_PARAM_BITRATETYPE);
     pCompPortOut->pBitRateType->nPortIndex = VIDENC_OUTPUT_PORT;
     pCompPortOut->pBitRateType->eControlRate = OMX_Video_ControlRateConstant;
-    pCompPortOut->pBitRateType->nTargetBitrate = pCompPortOut->pBitRateTypeConfig->nEncodeBitrate;
+	pCompPortOut->pBitRateType->nTargetBitrate = 64000;
 
     /*set the capability Flags needed by Opencore*/
     pComponentPrivate->pCapabilityFlags->iIsOMXComponentMultiThreaded=OMX_TRUE;
@@ -2275,6 +2275,9 @@ static OMX_ERRORTYPE GetConfig (OMX_HANDLETYPE hComponent,
         case VideoEncodeCustomConfigIndexAIRRate:
             (*((OMX_U32*)ComponentConfigStructure)) = (OMX_U32)pComponentPrivate->nAIRRate;
             break;
+        case VideoEncodeCustomConfigIndexTargetBitRate:
+            (*((OMX_U32*)ComponentConfigStructure)) = (OMX_U32)pComponentPrivate->nTargetBitRate;
+            break;
         /*ASO/FMO*/
         case VideoEncodeCustomConfigIndexNumSliceASO:
             (*((OMX_U32*)ComponentConfigStructure)) = (OMX_U32)pComponentPrivate->numSliceASO;
@@ -2479,8 +2482,8 @@ static OMX_ERRORTYPE SetConfig (OMX_HANDLETYPE hComponent,
         case VideoEncodeCustomConfigIndexAIRRate:
             pComponentPrivate->nAIRRate = (OMX_U32)(*((OMX_U32*)ComponentConfigStructure));
             break;
-        //case VideoEncodeCustomConfigIndexTargetBitRate:
-        //    pComponentPrivate->nTargetBitRate = (OMX_U32)(*((OMX_U32*)ComponentConfigStructure));
+        case VideoEncodeCustomConfigIndexTargetBitRate:
+            pComponentPrivate->nTargetBitRate = (OMX_U32)(*((OMX_U32*)ComponentConfigStructure));
             break;
         /*ASO/FMO*/
         case VideoEncodeCustomConfigIndexNumSliceASO:

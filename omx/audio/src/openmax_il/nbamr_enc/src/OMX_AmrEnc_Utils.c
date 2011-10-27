@@ -1192,6 +1192,11 @@ OMX_U32 NBAMRENC_HandleCommand (AMRENC_COMPONENT_PRIVATE *pComponentPrivate)
             pComponentPrivate->bInitParamsInitialized = 0;
             pComponentPrivate->bLoadedCommandPending = OMX_FALSE;
             pComponentPrivate->bLoadedWaitingFreeBuffers = OMX_FALSE;
+        }
+        else {
+            pComponentPrivate->bLoadedWaitingFreeBuffers = OMX_TRUE;
+            OMX_PRBUFFER2(pComponentPrivate->dbg, "Skipped this section because buffers not yet freed\n");
+        }
             break;
 
         case OMX_StatePause:
