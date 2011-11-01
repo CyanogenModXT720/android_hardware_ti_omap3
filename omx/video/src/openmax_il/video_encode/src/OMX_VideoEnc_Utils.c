@@ -369,7 +369,7 @@ void OMX_VIDENC_SignalIfAllBuffersAreReturned(VIDENC_COMPONENT_PRIVATE *pCompone
     }
     pthread_mutex_unlock(&bufferReturned_mutex);
 }
-        else
+/*        else
         {
             if ((FD_ISSET(pComponentPrivate->nFilled_iPipe[0], &rfds)))
             { 
@@ -377,7 +377,7 @@ void OMX_VIDENC_SignalIfAllBuffersAreReturned(VIDENC_COMPONENT_PRIVATE *pCompone
                             &pBufHead, 
                             sizeof(pBufHead));
                 OMX_PRBUFFER2(pComponentPrivate->dbg, "Flusing pipe nFilled_iPipe[0]!\n");
-                if (nRet == -1)
+               if (nRet == -1)
                 {
                     OMX_PRBUFFER3(pComponentPrivate->dbg, "Error while reading from nFilled_iPipe\n");
                     OMX_CONF_SET_ERROR_BAIL(eError, OMX_ErrorHardware);
@@ -401,7 +401,7 @@ void OMX_VIDENC_SignalIfAllBuffersAreReturned(VIDENC_COMPONENT_PRIVATE *pCompone
     
 OMX_CONF_CMD_BAIL:
     return eError; 
-}
+}*/
 
 /*---------------------------------------------------------------------------------------*/
 /**

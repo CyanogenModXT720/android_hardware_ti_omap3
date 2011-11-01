@@ -289,12 +289,12 @@ void* OMX_VIDENC_Thread (void* pThreadData)
                 }
             }
 
-            if(pComponentPrivate->bEmptyPipes)
-            {
-                    pComponentPrivate->bEmptyPipes = OMX_FALSE;
-            }
-            else 
-            {
+//            if(pComponentPrivate->bEmptyPipes)
+//           {
+//                    pComponentPrivate->bEmptyPipes = OMX_FALSE;
+//            }
+//            else 
+//            {
             if ((FD_ISSET(pComponentPrivate->nFilled_iPipe[0], &rfds)) &&
                 (pComponentPrivate->eState != OMX_StatePause &&
                  pComponentPrivate->eState != OMX_StateIdle &&

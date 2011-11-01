@@ -1733,12 +1733,12 @@ void* MessagingThread(void* arg)
 
         if (threadState == EMessagingThreadCodecRunning) {
             waitForEventsTimeout = 10000;
-            getMessageTimeout = 1000; /* new */
+            //getMessageTimeout = 1000; /* new */
         }
         /* set the timeouts lower when the codec is stopped so that thread deletion response will be faster */
         else if (threadState == EMessagingThreadCodecStopped) {
             waitForEventsTimeout = 10;
-            getMessageTimeout = 10;
+            //getMessageTimeout = 10;
         }
 
 #ifdef __ERROR_PROPAGATION__
